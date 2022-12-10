@@ -12,11 +12,11 @@ class WallPolicy
     /**
      * Determine whether the user can view the model.
      *
-     * @param  \App\Models\User  $user
-     * @param  \App\Models\User  $model
+     * @param User|null $user
+     * @param \App\Models\User $model
      * @return \Illuminate\Auth\Access\Response|bool
      */
-    public function viewWall(User $user, User $model)
+    public function viewWall(?User $user, User $model)
     {
         if ($user?->id === $model->id) {
             return true;

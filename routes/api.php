@@ -16,16 +16,6 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::post('auth/register', [RegisterController::class, 'register'])->name('auth.register');
-Route::post('auth/login', [LoginController::class, 'login'])->name('auth.login');
-
-Route::get('wall/{username}', [WallController::class, 'wall']);
-
 Route::middleware('auth:sanctum')->group(function() {
-    Route::get('auth/verify/{id}/{hash}', [RegisterController::class, 'verify'])
-        ->middleware('signed')
-        ->name('verification.verify');
 
-    Route::get('auth/verify/resend', [RegisterController::class, 'resendVerification'])
-        ->name('verification.send');
 });

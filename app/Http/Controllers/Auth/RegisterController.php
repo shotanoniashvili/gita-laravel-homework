@@ -3,50 +3,73 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\RegisterRequest;
+use App\Providers\RouteServiceProvider;
 use App\Models\User;
-use Exception;
-use Illuminate\Auth\Events\Registered;
-use Illuminate\Foundation\Auth\EmailVerificationRequest;
-use Illuminate\Support\Facades\DB;
+use Illuminate\Foundation\Auth\RegistersUsers;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Validator;
 
 class RegisterController extends Controller
 {
+    /*
+    |--------------------------------------------------------------------------
+    | Register Controller
+    |--------------------------------------------------------------------------
+    |
+    | This controller handles the registration of new users as well as their
+    | validation and creation. By default this controller uses a trait to
+    | provide this functionality without requiring any additional code.
+    |
+    */
+
+    use RegistersUsers;
+
     /**
-     * @throws Exception
+     * Where to redirect users after registration.
+     *
+     * @var string
      */
-    public function register(RegisterRequest $request) {
-        DB::beginTransaction();
-        try {
-            $user = new User($request->except(['password']));
-            $user->password = Hash::make($request->get('password'));
-            $user->is_public = (bool)$request->get('is_public');
-            $user->save();
+    protected $redirectTo = RouteServiceProvider::HOME;
 
-            event(new Registered($user));
-
-            DB::commit();
-        } catch (Exception $e) {
-            DB::rollBack();
-            throw $e;
-        }
-
-//        return new BaseResource('You have successfully registered, please check your email for account confirmation');
-        // TODO response type
+    /**
+     * Create a new controller instance.
+     *
+     * @return void
+     */
+    public function __construct()
+    {
+        $this->middleware('guest');
     }
 
-    public function verify(EmailVerificationRequest $request) {
-        $request->fulfill();
-
-//        return new BaseResource('You have successfully verified your account');
-        // TODO response type
+    /**
+     * Get a validator for an incoming registration request.
+     *
+     * @param  array  $data
+     * @return \Illuminate\Contracts\Validation\Validator
+     */
+    protected function validator(array $data)
+    {
+        return Validator::make($data, [
+            'name' => ['required', 'string', 'max:255'],
+            'username' => ['required', 'string', 'max:255', 'unique:users', 'alpha_dash'],
+            'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
+            'password' => ['required', 'string', 'min:8', 'confirmed'],
+        ]);
     }
 
-    public function resendVerification(RegisterRequest $request) {
-        $request->user()->sendEmailVerificationNotification();
-
-//        return new BaseResource('Verification email is been successfully sent to your email');
-        // TODO response type
+    /**
+     * Create a new user instance after a valid registration.
+     *
+     * @param  array  $data
+     * @return \App\Models\User
+     */
+    protected function create(array $data)
+    {
+        return User::create([
+            'name' => $data['name'],
+            'username' => $data['username'],
+            'email' => $data['email'],
+            'password' => Hash::make($data['password']),
+        ]);
     }
 }

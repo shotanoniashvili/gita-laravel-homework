@@ -5,7 +5,6 @@ namespace App\Http\Resources;
 use Illuminate\Contracts\Support\Responsable;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Response;
-use Illuminate\Support\Facades\Request;
 
 class BaseResource implements Responsable
 {

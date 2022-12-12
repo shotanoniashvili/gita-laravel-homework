@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\TweetController;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 
@@ -14,10 +15,10 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Auth::routes();
+Auth::routes(['verify' => true]);
 
-Route::get('/{username}', [App\Http\Controllers\WallController::class, 'wall'])->name('wall');
+Route::get('/{username}', [TweetController::class, 'profile'])->name('profile');
 
-Route::group(['middleware' => 'auth'], function() {
-    Route::get('/', [App\Http\Controllers\WallController::class, 'myFeed'])->name('home');
+Route::group(['middleware' => ['auth', 'verified']], function() {
+    Route::get('/', [TweetController::class, 'index'])->name('home');
 });

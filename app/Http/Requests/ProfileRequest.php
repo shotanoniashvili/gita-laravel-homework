@@ -2,9 +2,7 @@
 
 namespace App\Http\Requests;
 
-use App\Http\Requests;
-
-class ReplyRequest extends BaseRequest
+class ProfileRequest extends BaseRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -24,7 +22,10 @@ class ReplyRequest extends BaseRequest
     public function rules()
     {
         return [
-            'content_' . $this->id => 'required|string'
+            'username'  => 'required|unique:users,username,' . $this->user()->id,
+            'name'      => 'required',
+            'is_public' => 'nullable',
+            'password'  => 'nullable|confirmed|min:8'
         ];
     }
 }

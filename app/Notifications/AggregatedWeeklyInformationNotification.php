@@ -16,7 +16,7 @@ class AggregatedWeeklyInformationNotification extends Notification
      *
      * @return void
      */
-    public function __construct(private int $following, private int $followers)
+    public function __construct(private int $followsCount, private int $followersCount)
     {
         //
     }
@@ -42,8 +42,7 @@ class AggregatedWeeklyInformationNotification extends Notification
     {
         return [
             'url' => null,
-            'title' => 'Weekly information',
-            'text' => 'For the past 1 week you followed ' . $this->following . ' users, ' . $this->followers . ' users followed you.',
+            'text' => 'In the past week you followed ' . $this->followsCount . ' users, ' . $this->followersCount . ' users followed you.',
         ];
     }
 

@@ -18,7 +18,7 @@ class TweetLikeNotification extends Notification
      *
      * @return void
      */
-    public function __construct(private Tweet $tweet, private Like $like)
+    public function __construct(private Like $like)
     {
         //
     }
@@ -43,9 +43,8 @@ class TweetLikeNotification extends Notification
     public function toDatabase($notifiable)
     {
         return [
-            'url' => route('tweets.show', $this->tweet->id),
-            'title' => 'Your tweet has new like',
-            'text' => '' // TODO
+            'url' => route('tweets.show', $this->like->tweet->id),
+            'text' => 'You\'ve got new like from ' . $this->like->user->name
         ];
     }
 

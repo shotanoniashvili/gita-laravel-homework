@@ -8,13 +8,13 @@ use Illuminate\Support\Facades\Notification;
 
 class NotificationController extends Controller
 {
-    public function markAsRead(Request $request, int $notificationId = null) {
-        if (!$notificationId) {
+    public function markAsRead(Request $request, string $notificationUuid = null) {
+        if (!$notificationUuid) {
             $request->user()->unreadNotifications->markAsRead();
+        } else {
+            $request->user()->notifications()->where('id', $notificationUuid)->update(['read_at' => now()]);
         }
 
-        $request->user()->notifications()->where('id', $notificationId)->update(['read_at' => now()]);
-
-        // TODO
+        return redirect()->back();
     }
 }

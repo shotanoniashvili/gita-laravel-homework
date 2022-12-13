@@ -13,6 +13,7 @@
     <link rel="dns-prefetch" href="//fonts.gstatic.com">
     <link href="https://fonts.bunny.net/css?family=Nunito" rel="stylesheet">
 
+    @notifyCss
     <!-- Scripts -->
     @vite(['resources/sass/app.scss', 'resources/js/app.js'])
 </head>
@@ -49,27 +50,60 @@
                                 </li>
                             @endif
                         @else
+                            <li class="nav-item me-5">
+                                <form action="{{ route('search') }}" method="get">
+                                    <div class="input-group">
+                                        <input type="text" id="searchName" name="search" class="form-control"
+                                               placeholder="Search users by name / username">
+                                        <button type="submit" class="btn btn-outline-secondary">Search</button>
+                                    </div>
+                                </form>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="{{ route('tweets.saved') }}">Saved Tweets</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="{{ route('my-connections') }}">My Connections</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="{{ route('search') }}">Explore Users</a>
+                            </li>
                             <li class="nav-item dropdown">
                                 <a id="navbarNotificationDropdown" class="position-relative nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" v-pre>
                                     <i class="bi bi-bell"></i>
-                                    <span class="badge rounded-pill bg-danger notification-count">+99</span>
+                                    @if(auth()->user()->notifications()->whereNull('read_at')->count() > 0)
+                                        <span class="badge rounded-pill bg-danger notification-count">+{{ auth()->user()->notifications()->whereNull('read_at')->count() }}</span>
+                                    @endif
                                 </a>
 
                                 <div class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarNotificationDropdown">
-                                    <a class="dropdown-item" href="{{ route('logout') }}">
-                                        Notification 1
-                                    </a>
-                                    <a class="dropdown-item" href="{{ route('logout') }}">
-                                        Notification 2
-                                    </a>
+                                    @forelse(auth()->user()->notifications()->orderBy('read_at')->orderByDesc('created_at')->take(20)->get() as $notification)
+                                        <a class="dropdown-item" @if(!$notification->read_at) onclick="sendGetRequest('{{ route('notifications.read', $notification->id) }}')" @endif
+                                            href="{{ $notification->data['url'] }}">
+                                            @if(!$notification->read_at)
+                                                <strong>(new) {{ $notification->data['text'] }}</strong>
+                                            @else
+                                                {{ $notification->data['text'] }}
+                                            @endif
+                                        </a>
+                                    @empty
+                                        <span class="dropdown-item">{{ __('notifications.not-found') }}</span>
+                                    @endforelse
+                                    @if(auth()->user()->notifications->count() > 0)
+                                        <a class="dropdown-item border-top text-center" href="{{ route('notifications.read') }}">
+                                            Mark all as read
+                                        </a>
+                                    @endif
                                 </div>
                             </li>
                             <li class="nav-item dropdown">
                                 <a id="navbarDropdown" class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" v-pre>
-                                    {{ Auth::user()->name }}
+                                    {{ auth()->user()->name }}
                                 </a>
 
                                 <div class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
+                                    <a class="dropdown-item" href="{{ route('me') }}">My Profile</a>
+                                    <a class="dropdown-item" href="{{ route('profile.edit') }}">Edit Profile</a>
                                     <a class="dropdown-item" href="{{ route('logout') }}"
                                        onclick="event.preventDefault();
                                                      document.getElementById('logout-form').submit();">
@@ -91,5 +125,8 @@
             @yield('content')
         </main>
     </div>
+
+    <x:notify-messages />
+    @notifyJs
 </body>
 </html>

@@ -42,9 +42,8 @@ class UserUnfollowNotification extends Notification
     public function toDatabase($notifiable)
     {
         return [
-            'url' => route('users.show', $this->user->id),
-            'title' => 'Someone unfollowed you',
-            'text' => '' // TODO
+            'url' => route('profile', $this->user->username),
+            'text' => 'Your account unfollowed by ' . $this->user->name
         ];
     }
 

@@ -43,8 +43,7 @@ class CreateTweetNotification extends Notification
     {
         return [
             'url' => route('tweets.show', $this->tweet->id),
-            'title' => 'New tweet created',
-            'text' => '' // TODO
+            'text' => 'New tweet from ' . $this->tweet->user->name
         ];
     }
 

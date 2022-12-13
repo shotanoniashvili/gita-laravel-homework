@@ -6,6 +6,7 @@ use App\Models\Tweets\Reply;
 use App\Models\Tweets\Tweet;
 use Illuminate\Bus\Queueable;
 use Illuminate\Notifications\Notification;
+use Illuminate\Support\Facades\Log;
 
 class TweetReplyNotification extends Notification
 {
@@ -16,7 +17,7 @@ class TweetReplyNotification extends Notification
      *
      * @return void
      */
-    public function __construct(private Tweet $tweet, private Reply $like)
+    public function __construct(private Reply $reply)
     {
         //
     }
@@ -40,10 +41,10 @@ class TweetReplyNotification extends Notification
      */
     public function toDatabase($notifiable)
     {
+        Log::info(json_encode($this->reply->tweet));
         return [
-            'url' => route('tweets.show', $this->tweet->id),
-            'title' => 'Your tweet has new reply',
-            'text' => '' // TODO
+            'url' => route('tweets.show', $this->reply->tweet_id),
+            'text' => 'New reply from ' . $this->reply->user->name
         ];
     }
 

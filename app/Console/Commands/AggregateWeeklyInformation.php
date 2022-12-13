@@ -31,10 +31,10 @@ class AggregateWeeklyInformation extends Command
     public function handle()
     {
         foreach (User::all() as $user) {
-            // TODO get new followers count
+            $lastWeek = now()->subWeek();
 
-            $newFollowers = 0;
-            $newFollowing = 0;
+            $newFollowers = $user->followers()->wherePivot('created_at', '>', $lastWeek)->count();
+            $newFollowing = $user->follows()->wherePivot('created_at', '>', $lastWeek)->count();
             Notification::send($user, new AggregatedWeeklyInformationNotification($newFollowing, $newFollowers));
         }
 

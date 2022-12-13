@@ -42,9 +42,8 @@ class UserFollowNotification extends Notification
     public function toDatabase($notifiable)
     {
         return [
-            'url' => route('users.show', $this->user->id),
-            'title' => 'Your have new follower',
-            'text' => '' // TODO
+            'url' => route('profile', $this->user->username),
+            'text' => $this->user->name . ' follows you'
         ];
     }
 

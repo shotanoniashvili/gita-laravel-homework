@@ -20,7 +20,13 @@ class TweetService
     }
 
     public function feed(int $userId) {
-        return Tweet::with('user', 'likes', 'replies')->latest();
+        return Tweet::with('user', 'likes', 'replies')
+            ->whereHas('user', function ($query1) use ($userId) {
+                $query1->where('is_public', true)
+                    ->orWhereHas('followers', function ($query2) use ($userId) {
+                        $query2->where('user_followers.user_id', $userId);
+                    });
+            })->latest();
     }
 
     public function create(int $userId, array $data): Tweet {
